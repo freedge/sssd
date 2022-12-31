@@ -1129,6 +1129,22 @@ errno_t sss_ncache_prepopulate(struct sss_nc_ctx *ncache,
     }
 
     for (i = 0; (filter_list && filter_list[i]); i++) {
+        char *eos;
+        long res = strtol(filter_list[i], &eos, 10);
+
+        if (res > 0 && *eos == 0) {
+            DEBUG(SSSDBG_TRACE_ALL,
+                  "Adding [%ld] to uid negative cache.\n", res);
+            ret = sss_ncache_set_uid(ncache, true, NULL, res);
+            if (ret != EOK) {
+                DEBUG(SSSDBG_MINOR_FAILURE,
+                    "Failed to store permanent uid filter for %ld "
+                    "(%d [%s])\n",
+                    res, ret, strerror(ret));
+            }
+            continue;
+        }
+
         ret = sss_parse_name_for_domains(tmpctx, domain_list,
                                          NULL, filter_list[i],
                                          &domainname, &name);

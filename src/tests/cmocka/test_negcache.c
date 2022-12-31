@@ -638,7 +638,7 @@ static void test_sss_ncache_prepopulate(void **state)
     struct sss_domain_info *subdomain;
 
     struct sss_test_conf_param nss_params[] = {
-        { "filter_users", "testuser_nss@UPN.REALM, testuser_nss_short, all_dom_upn@"TEST_DOM_NAME },
+        { "filter_users", "testuser_nss@UPN.REALM, testuser_nss_short, all_dom_upn@"TEST_DOM_NAME", 12345" },
         { NULL, NULL },
     };
     struct sss_test_conf_param dom_params[] = {
@@ -722,6 +722,9 @@ static void test_sss_ncache_prepopulate(void **state)
     assert_int_equal(ret, EEXIST);
 
     ret = check_uid_in_ncache(ncache, 0);
+    assert_int_equal(ret, EEXIST);
+
+    ret = check_uid_in_ncache(ncache, 12345);
     assert_int_equal(ret, EEXIST);
 
     ret = check_gid_in_ncache(ncache, 0);
